@@ -1,0 +1,21 @@
+local darktable = require "darktable"
+
+darktable.register_event("shortcut",
+                         function(event,shortcut)
+                            local images = darktable.gui.action_images
+                            local t ={}
+                            for _,v in ipairs(images) do
+                               --s=(tostring (v))
+                               s=(string.match (tostring (v), "%d%d%d%d%/%d%d/.+"))
+                               s=(string.gsub (s, "CR2", "jpg"))
+                               s=(string.gsub (s, "JPG", "jpg"))
+                               if (string.match (s, "%.gif"))
+                               then
+                                  table.insert (t, 1, s)
+                               else
+                                  t [#t+1]=s
+                               end
+                            end
+                            print (table.concat (t, "\n"))
+                         end,"Print selected images"
+)
