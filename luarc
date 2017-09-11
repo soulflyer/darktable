@@ -16,6 +16,15 @@ darktable.register_event("shortcut",
                                   t [#t+1]=s
                                end
                             end
-                            print (table.concat (t, "\n"))
-                         end,"Print selected images"
-)
+                            os.execute ("echo ".. (table.concat (t, " ")))
+                            --print (table.concat (t, " "))
+                         end,"Print selected images")
+
+local bounce_buffer = {}
+
+local function callback()
+    bounce_buffer = darktable.gui.selection(bounce_buffer)
+end
+darktable.register_event("shortcut",
+                  callback,
+                  "switch current selection")
