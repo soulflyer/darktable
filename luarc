@@ -1,30 +1,87 @@
-local darktable = require "darktable"
+local dt = require "darktable"
 
-darktable.register_event("shortcut",
-                         function(event,shortcut)
-                            local images = darktable.gui.action_images
-                            local t ={}
-                            for _,v in ipairs(images) do
-                               --s=(tostring (v))
-                               s=(string.match (tostring (v), "%d%d%d%d%/%d%d/.+"))
-                               s=(string.gsub (s, "CR2", "jpg"))
-                               s=(string.gsub (s, "JPG", "jpg"))
-                               if (string.match (s, "%.gif"))
-                               then
-                                  table.insert (t, 1, s)
-                               else
-                                  t [#t+1]=s
-                               end
-                            end
-                            os.execute ("echo ".. (table.concat (t, " ")))
-                            --print (table.concat (t, " "))
-                         end,"Print selected images")
+dt.register_event ("shortcut",
+                   function (event,shortcut)
+                      local newrule = dt.gui.libs.collect.new_rule ()
+                      newrule.mode = "DT_LIB_COLLECT_MODE_AND"
+                      newrule.data = "t1"
+                      newrule.item = "DT_COLLECTION_PROP_TAG"
+                      local filters = dt.gui.libs.collect.filter ({})
+                      table.insert (filters, newrule)
+                      dt.gui.libs.collect.filter (filters)
+                   end,
+                   "Add t1 filter")
+
+dt.register_event("shortcut",
+                  function(event,shortcut)
+                     local images = dt.gui.action_images
+                     local t ={}
+                     for _,v in ipairs(images) do
+                        --s=(tostring (v))
+                        s=(string.match (tostring (v), "%d%d%d%d%/%d%d/.+"))
+                        s=(string.gsub (s, "CR2", "jpg"))
+                        s=(string.gsub (s, "JPG", "jpg"))
+                        if (string.match (s, "%.gif"))
+                        then
+                           table.insert (t, 1, s)
+                        else
+                           t [#t+1]=s
+                        end
+                     end
+                     os.execute ("echo ".. (table.concat (t, " ")))
+                     --print (table.concat (t, " "))
+                  end,
+                  "Print selected images")
 
 local bounce_buffer = {}
+dt.register_event ("shortcut",
+                   function ()
+                      bounce_buffer = dt.gui.selection(bounce_buffer)
+                   end,
+                   "Switch current selection")
 
-local function callback()
-    bounce_buffer = darktable.gui.selection(bounce_buffer)
+dt.register_event ("shortcut",
+                   function ()
+                      local selection = {}
+                      for _,image in ipairs (dt.database) do
+                         if image.red then
+                            table.insert (selection, image)
+                         end
+                      end
+                      dt.gui.selection (selection)
+                   end,
+                   "Select all red")
+
+local function callback ()
+   local selection = {}
+   for _,image in ipairs (dt.database) do
+      print (tostring (image))
+      tags=dt.tags.get_tags (image)
+      for _,tag in ipairs (tags) do
+         print (tag)
+         if tostring (tag) == "t5" then
+            table.insert (selection, image)
+            break
+         end
+      end
+   end
+   dt.gui.selection (selection)
 end
-darktable.register_event("shortcut",
-                  callback,
-                  "switch current selection")
+
+dt.register_event ("shortcut",
+                   function ()
+                      local selection = {}
+                      for _,image in ipairs (dt.database) do
+                         print (tostring (image))
+                         tags=dt.tags.get_tags (image)
+                         for _,tag in ipairs (tags) do
+                            print (tag)
+                            if tostring (tag) == "t5" then
+                               table.insert (selection, image)
+                               break
+                            end
+                         end
+                      end
+                      dt.gui.selection (selection)
+                   end ,
+                   "Select all t5")
