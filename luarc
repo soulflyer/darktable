@@ -1,16 +1,26 @@
 local dt = require "darktable"
 
-dt.register_event ("shortcut",
-                   function (event,shortcut)
-                      local newrule = dt.gui.libs.collect.new_rule ()
-                      newrule.mode = "DT_LIB_COLLECT_MODE_AND"
-                      newrule.data = "t1"
-                      newrule.item = "DT_COLLECTION_PROP_TAG"
-                      local filters = dt.gui.libs.collect.filter ({})
-                      table.insert (filters, newrule)
-                      dt.gui.libs.collect.filter (filters)
-                   end,
-                   "Add t1 filter")
+local function add_tag_filter (tag_name)
+   local newrule = dt.gui.libs.collect.new_rule ()
+   newrule.mode = "DT_LIB_COLLECT_MODE_AND"
+   newrule.data = tag_name
+   newrule.item = "DT_COLLECTION_PROP_TAG"
+   local filters = dt.gui.libs.collect.filter ({})
+   local toggle = true
+   for _,filter in ipairs (filters) do
+      if filter.data == tag_name then
+         print "tag already in filters"
+         toggle = false
+         break
+      end
+   end
+   print (toggle)
+   if toggle then
+      table.insert (filters, newrule)
+      dt.gui.libs.collect.filter (filters)
+   end
+
+end
 
 dt.register_event("shortcut",
                   function(event,shortcut)
@@ -52,22 +62,6 @@ dt.register_event ("shortcut",
                    end,
                    "Select all red")
 
-local function callback ()
-   local selection = {}
-   for _,image in ipairs (dt.database) do
-      print (tostring (image))
-      tags=dt.tags.get_tags (image)
-      for _,tag in ipairs (tags) do
-         print (tag)
-         if tostring (tag) == "t5" then
-            table.insert (selection, image)
-            break
-         end
-      end
-   end
-   dt.gui.selection (selection)
-end
-
 dt.register_event ("shortcut",
                    function ()
                       local selection = {}
@@ -85,3 +79,63 @@ dt.register_event ("shortcut",
                       dt.gui.selection (selection)
                    end ,
                    "Select all t5")
+
+dt.register_event ("shortcut",
+                   function (event,shortcut)
+                      add_tag_filter ("t1")
+                   end,
+                   "Add t1 filter")
+
+dt.register_event ("shortcut",
+                   function (event,shortcut)
+                      add_tag_filter ("t2")
+                   end,
+                   "Add t2 filter")
+
+dt.register_event ("shortcut",
+                   function (event,shortcut)
+                      add_tag_filter ("t3")
+                   end,
+                   "Add t3 filter")
+
+dt.register_event ("shortcut",
+                   function (event,shortcut)
+                      add_tag_filter ("t4")
+                   end,
+                   "Add t4 filter")
+
+dt.register_event ("shortcut",
+                   function (event,shortcut)
+                      add_tag_filter ("t5")
+                   end,
+                   "Add t5 filter")
+
+dt.register_event ("shortcut",
+                   function (event,shortcut)
+                      add_tag_filter ("t6")
+                   end,
+                   "Add t6 filter")
+
+dt.register_event ("shortcut",
+                   function (event,shortcut)
+                      add_tag_filter ("t7")
+                   end,
+                   "Add t7 filter")
+
+dt.register_event ("shortcut",
+                   function (event,shortcut)
+                      add_tag_filter ("t8")
+                   end,
+                   "Add t8 filter")
+
+dt.register_event ("shortcut",
+                   function (event,shortcut)
+                      add_tag_filter ("t9")
+                   end,
+                   "Add t9 filter")
+
+dt.register_event ("shortcut",
+                   function (event,shortcut)
+                      add_tag_filter ("t10")
+                   end,
+                   "Add t10 filter")
