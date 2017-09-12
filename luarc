@@ -10,6 +10,7 @@ local function add_tag_filter (tag_name)
    for _,filter in ipairs (filters) do
       if filter.data == tag_name then
          print "tag already in filters"
+         -- Might need to delete filter from the list here
          toggle = false
          break
       end
@@ -19,8 +20,48 @@ local function add_tag_filter (tag_name)
       table.insert (filters, newrule)
       dt.gui.libs.collect.filter (filters)
    end
-
+   -- and move the call collect.filter here
 end
+
+local function select_tag(tag_name)
+   local selection = {}
+   for _,image in ipairs (dt.database) do
+      tags=dt.tags.get_tags (image)
+      for _,tag in ipairs (tags) do
+         if tostring (tag) == tag_name then
+            table.insert (selection, image)
+            break
+         end
+      end
+   end
+   dt.gui.selection (selection)
+end
+
+dt.register_event ("shortcut",
+                   function (event,shortcut)
+                      -- This needs to duplicate the film roll rule
+                      -- and change its mode to DT_MODE_COLLECT_MODE_OR
+                      local newrule = dt.gui.libs.collect.new_rule ()
+                      newrule.mode = "DT_LIB_COLLECT_MODE_AND"
+                      newrule.data = "red"
+                      newrule.item = "DT_COLLECTION_PROP_COLORLABEL"
+                      local filters = dt.gui.libs.collect.filter ({})
+                      local toggle = true
+                      for _,filter in ipairs (filters) do
+                         if filter.data == "red" then
+                            print "tag already in filters"
+                            -- Might need to delete filter from the list here
+                            toggle = false
+                            break
+                         end
+                      end
+                      if toggle then
+                         table.insert (filters, newrule)
+                         dt.gui.libs.collect.filter (filters)
+                      end
+                      -- and move the call collect.filter here
+                   end,
+                   "Add red images to filters")
 
 dt.register_event("shortcut",
                   function(event,shortcut)
@@ -38,7 +79,7 @@ dt.register_event("shortcut",
                            t [#t+1]=s
                         end
                      end
-                     os.execute ("echo ".. (table.concat (t, " ")))
+                     os.execute ("echo ".. (table.concat (t, "\n")))
                      --print (table.concat (t, " "))
                   end,
                   "Print selected images")
@@ -62,23 +103,23 @@ dt.register_event ("shortcut",
                    end,
                    "Select all red")
 
-dt.register_event ("shortcut",
-                   function ()
-                      local selection = {}
-                      for _,image in ipairs (dt.database) do
-                         print (tostring (image))
-                         tags=dt.tags.get_tags (image)
-                         for _,tag in ipairs (tags) do
-                            print (tag)
-                            if tostring (tag) == "t5" then
-                               table.insert (selection, image)
-                               break
-                            end
-                         end
-                      end
-                      dt.gui.selection (selection)
-                   end ,
-                   "Select all t5")
+-- dt.register_event ("shortcut",
+--                    function ()
+--                       local selection = {}
+--                       for _,image in ipairs (dt.database) do
+--                          print (tostring (image))
+--                          tags=dt.tags.get_tags (image)
+--                          for _,tag in ipairs (tags) do
+--                             print (tag)
+--                             if tostring (tag) == "t5" then
+--                                table.insert (selection, image)
+--                                break
+--                             end
+--                          end
+--                       end
+--                       dt.gui.selection (selection)
+--                    end ,
+--                    "Select all t5")
 
 dt.register_event ("shortcut",
                    function (event,shortcut)
@@ -139,3 +180,63 @@ dt.register_event ("shortcut",
                       add_tag_filter ("t10")
                    end,
                    "Add t10 filter")
+
+dt.register_event ("shortcut",
+                   function (event,shortcut)
+                      select_tag ("t1")
+                   end,
+                   "Select all t1")
+
+dt.register_event ("shortcut",
+                   function (event,shortcut)
+                      select_tag ("t2")
+                   end,
+                   "Select all t2")
+
+dt.register_event ("shortcut",
+                   function (event,shortcut)
+                      select_tag ("t3")
+                   end,
+                   "Select all t3")
+
+dt.register_event ("shortcut",
+                   function (event,shortcut)
+                      select_tag ("t4")
+                   end,
+                   "Select all t4")
+
+dt.register_event ("shortcut",
+                   function (event,shortcut)
+                      select_tag ("t5")
+                   end,
+                   "Select all t5")
+
+dt.register_event ("shortcut",
+                   function (event,shortcut)
+                      select_tag ("t6")
+                   end,
+                   "Select all t6")
+
+dt.register_event ("shortcut",
+                   function (event,shortcut)
+                      select_tag ("t7")
+                   end,
+                   "Select all t7")
+
+dt.register_event ("shortcut",
+                   function (event,shortcut)
+                      select_tag ("t8")
+                   end,
+                   "Select all t8")
+
+dt.register_event ("shortcut",
+                   function (event,shortcut)
+                      select_tag ("t9")
+                   end,
+                   "Select all t9")
+
+dt.register_event ("shortcut",
+                   function (event,shortcut)
+                      select_tag ("t10")
+                   end,
+                   "Select all t10")
