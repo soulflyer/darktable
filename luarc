@@ -1,27 +1,52 @@
 local dt = require "darktable"
 
 local function add_tag_filter (tag_name)
+   -- Selects all the pics with the given tag plus any labelled red
    local newrule = dt.gui.libs.collect.new_rule ()
    newrule.mode = "DT_LIB_COLLECT_MODE_AND"
    newrule.data = tag_name
    newrule.item = "DT_COLLECTION_PROP_TAG"
+
    local filters = dt.gui.libs.collect.filter ({})
-   local toggle = true
-   for _,filter in ipairs (filters) do
-      if filter.data == tag_name then
-         print "tag already in filters"
-         -- Might need to delete filter from the list here
-         toggle = false
-         break
-      end
-   end
-   print (toggle)
-   if toggle then
+   local first = filters [1]
+   local rollrule = dt.gui.libs.collect.new_rule ()
+   rollrule.mode = "DT_LIB_COLLECT_MODE_OR"
+   rollrule.data = first.data
+   rollrule.item = first.item
+
+   local redrule = dt.gui.libs.collect.new_rule ()
+   redrule.mode = "DT_LIB_COLLECT_MODE_AND"
+   redrule.data = "red"
+   redrule.item = "DT_COLLECTION_PROP_COLORLABEL"
+
+   filters = {}
+      table.insert (filters, first)
       table.insert (filters, newrule)
+      table.insert (filters, rollrule)
+      table.insert (filters, redrule)
       dt.gui.libs.collect.filter (filters)
-   end
-   -- and move the call collect.filter here
 end
+
+local function show_filters ()
+   -- Development purposes, just to get a looka t what filters are applied
+   local filters = dt.gui.libs.collect.filter ({})
+   local first = filters [1]
+   if first.item == "DT_COLLECTION_PROP_FILMROLL" then
+      print ("first: " ..  first.data)
+   else
+      print ("Not a film roll")
+   end
+   for x,filter in ipairs (filters) do
+      print (x .. " " .. filter.data .. " " .. filter.mode .. " " .. filter.item )
+   end
+   dt.gui.libs.collect.filter (filters)
+end
+
+dt.register_event ("shortcut",
+                   function (event,shortcut)
+                      show_filters ()
+                   end,
+                   "Show filters")
 
 local function select_tag(tag_name)
    local selection = {}
@@ -71,6 +96,7 @@ dt.register_event("shortcut",
                         --s=(tostring (v))
                         s=(string.match (tostring (v), "%d%d%d%d%/%d%d/.+"))
                         s=(string.gsub (s, "CR2", "jpg"))
+                        s=(string.gsub (s, "NEF", "jpg"))
                         s=(string.gsub (s, "JPG", "jpg"))
                         if (string.match (s, "%.gif"))
                         then
@@ -79,8 +105,10 @@ dt.register_event("shortcut",
                            t [#t+1]=s
                         end
                      end
-                     os.execute ("echo ".. (table.concat (t, "\n")))
-                     --print (table.concat (t, " "))
+                     --os.execute ("echo ".. (table.concat (t, "\n")))
+                     print ("************************************************\n")
+                     print (table.concat (t, "\n"))
+                     dt.print ("Printed list of pics")
                   end,
                   "Print selected images")
 
