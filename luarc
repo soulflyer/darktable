@@ -1,4 +1,74 @@
 local dt = require "darktable"
+--require "lua-scripts/examples/moduleExample"
+--require "lua-scripts/official/image_path_in_ui"
+--require "lua-scripts/contrib/pdf_slideshow"
+require "lua-scripts/contrib/quicktag"
+
+local my_label = dt.new_widget("label")
+my_label.label = "Hello, world !"
+local my_widget = dt.new_widget("box"){
+   orientation = "horizontal",
+   dt.new_widget("label"){ label = "here => " },
+   dt.new_widget("entry"){ tooltip = "please enter text here" }
+                                             }
+
+dt.register_lib("test","test",false,false,{
+                   [dt.gui.views.lighttable] = {"DT_UI_CONTAINER_PANEL_LEFT_CENTER",20},
+                                          },my_widget)
+
+local divecentre = dt.new_widget("entry")
+{
+    text = "test",
+    placeholder = "placeholder",
+    editable = true,
+    tooltip = "Set to 'none' to use the soulflyer intro pic",
+    reset_callback = function(self) self.text = "text" end
+}
+
+local filename = dt.new_widget ("entry")
+{
+   text = "abcdefg",
+   placeholder = "placeholder",
+   editable = true,
+   tooltip = "Typically 'yymmdd-projectname'",
+   reset_callback = function (self) self.text = "text" end
+}
+
+local divecentre_label = dt.new_widget ("label")
+{
+   label = "divecentre"
+}
+
+local filename_label = dt.new_widget ("label")
+{
+   label = "filename"
+}
+
+dt.register_lib(
+  "exportJSONModule",     -- Module name
+  "export JSON",     -- name
+  true,                -- expandable
+  false,               -- resetable
+  {[dt.gui.views.lighttable] = {"DT_UI_CONTAINER_PANEL_RIGHT_CENTER", 100}},   -- containers
+  dt.new_widget("box") -- widget
+  {
+    orientation = "vertical",
+    divecentre_label,
+    divecentre,
+    filename_label,
+    filename,
+    dt.new_widget("button")
+    {
+      label = "Export",
+      clicked_callback = function (_)
+        dt.print( divecentre.text .. " " .. filename.text)
+      end
+    }
+  },
+  nil,-- view_enter
+  nil -- view_leave
+)
+
 
 local function add_tag_filter (tag_name)
    -- Selects all the pics with the given tag plus any labelled red
@@ -20,11 +90,11 @@ local function add_tag_filter (tag_name)
    redrule.item = "DT_COLLECTION_PROP_COLORLABEL"
 
    filters = {}
-      table.insert (filters, first)
-      table.insert (filters, newrule)
-      table.insert (filters, rollrule)
-      table.insert (filters, redrule)
-      dt.gui.libs.collect.filter (filters)
+   table.insert (filters, first)
+   table.insert (filters, newrule)
+   table.insert (filters, rollrule)
+   table.insert (filters, redrule)
+   dt.gui.libs.collect.filter (filters)
 end
 
 local function show_filters ()
@@ -112,6 +182,30 @@ dt.register_event("shortcut",
                   end,
                   "Print selected images")
 
+dt.register_event("shortcut",
+                  function(event,shortcut)
+                     local images = dt.gui.action_images
+                     local t ={}
+                     for _,v in ipairs(images) do
+                        --s=(tostring (v))
+                        s=(string.match (tostring (v), "%d%d%d%d%/%d%d/.+"))
+                        s=(string.gsub (s, "CR2", "jpg"))
+                        s=(string.gsub (s, "NEF", "jpg"))
+                        s=(string.gsub (s, "JPG", "jpg"))
+                        if (string.match (s, "%.gif"))
+                        then
+                           table.insert (t, 1, s)
+                        else
+                           t [#t+1]=s
+                        end
+                     end
+                     os.execute ("build-json -l \"".. (table.concat (t, " ")) .. "\" testfile")
+                     print ("************************************************\n")
+                     --print (table.concat (t, "\n"))
+                     dt.print ("Printed list of pics")
+                  end,
+                  "Build json with selected images")
+
 local bounce_buffer = {}
 dt.register_event ("shortcut",
                    function ()
@@ -130,24 +224,6 @@ dt.register_event ("shortcut",
                       dt.gui.selection (selection)
                    end,
                    "Select all red")
-
--- dt.register_event ("shortcut",
---                    function ()
---                       local selection = {}
---                       for _,image in ipairs (dt.database) do
---                          print (tostring (image))
---                          tags=dt.tags.get_tags (image)
---                          for _,tag in ipairs (tags) do
---                             print (tag)
---                             if tostring (tag) == "t5" then
---                                table.insert (selection, image)
---                                break
---                             end
---                          end
---                       end
---                       dt.gui.selection (selection)
---                    end ,
---                    "Select all t5")
 
 dt.register_event ("shortcut",
                    function (event,shortcut)
