@@ -1,20 +1,5 @@
 local dt = require "darktable"
---require "lua-scripts/examples/moduleExample"
---require "lua-scripts/official/image_path_in_ui"
---require "lua-scripts/contrib/pdf_slideshow"
-require "lua-scripts/contrib/quicktag"
-
-local my_label = dt.new_widget("label")
-my_label.label = "Hello, world !"
-local my_widget = dt.new_widget("box"){
-   orientation = "horizontal",
-   dt.new_widget("label"){ label = "here => " },
-   dt.new_widget("entry"){ tooltip = "please enter text here" }
-                                             }
-
-dt.register_lib("test","test",false,false,{
-                   [dt.gui.views.lighttable] = {"DT_UI_CONTAINER_PANEL_LEFT_CENTER",20},
-                                          },my_widget)
+require "/Users/iain/Code/Lua/lua-scripts/contrib/quicktag"
 
 local divecentre = dt.new_widget("entry")
 {
