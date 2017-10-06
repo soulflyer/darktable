@@ -1,4 +1,6 @@
 local dt = require "darktable"
+-- For some reason this doesn't work from the command line
+-- although the relative path version does.
 require "/Users/iain/Code/Lua/lua-scripts/contrib/quicktag"
 
 local divecentre = dt.new_widget("entry")
@@ -61,7 +63,7 @@ dt.register_lib(
                t [#t+1]=s
             end
          end
-         os.execute ("build-json -d \""
+         os.execute ("/Users/iain/bin/build-json -z -d \""
                         .. divecentre.text
                         .. "\" -l \""
                         .. (table.concat (t, " "))
