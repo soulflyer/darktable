@@ -27,72 +27,9 @@ dt.register_event ("shortcut",
                    end,
                    "Show filters")
 
-
-dt.register_event ("shortcut",
-                   function (event,shortcut)
-                      -- This needs to duplicate the film roll rule
-                      -- and change its mode to DT_MODE_COLLECT_MODE_OR
-                      local newrule = dt.gui.libs.collect.new_rule ()
-                      newrule.mode = "DT_LIB_COLLECT_MODE_AND"
-                      newrule.data = "red"
-                      newrule.item = "DT_COLLECTION_PROP_COLORLABEL"
-                      local filters = dt.gui.libs.collect.filter ({})
-                      local toggle = true
-                      for _,filter in ipairs (filters) do
-                         if filter.data == "red" then
-                            print "tag already in filters"
-                            -- Might need to delete filter from the list here
-                            toggle = false
-                            break
-                         end
-                      end
-                      if toggle then
-                         table.insert (filters, newrule)
-                         dt.gui.libs.collect.filter (filters)
-                      end
-                      -- and move the call collect.filter here
-                   end,
-                   "Add red images to filters")
-
-dt.register_event("shortcut",
-                  function(event,shortcut)
-                     local images = dt.gui.action_images
-                     local t ={}
-                     for _,v in ipairs(images) do
-                        --s=(tostring (v))
-                        s=(string.match (tostring (v), "%d%d%d%d%/%d%d/.+"))
-                        s=(string.gsub (s, "CR2", "jpg"))
-                        s=(string.gsub (s, "NEF", "jpg"))
-                        s=(string.gsub (s, "JPG", "jpg"))
-                        if (string.match (s, "%.gif"))
-                        then
-                           table.insert (t, 1, s)
-                        else
-                           t [#t+1]=s
-                        end
-                     end
-                     --os.execute ("echo ".. (table.concat (t, "\n")))
-                     print ("************************************************\n")
-                     print (table.concat (t, "\n"))
-                     dt.print ("Printed list of pics")
-                  end,
-                  "Print selected images")
-
 local bounce_buffer = {}
 dt.register_event ("shortcut",
                    function ()
                       bounce_buffer = dt.gui.selection(bounce_buffer)
                    end,
                    "Switch current selection")
-
-dt.register_event ("shortcut",
-                   function ()
-                      local selection = {}
-                      for _,image in ipairs (dt.database) do
-                         if image.red then
-                            table.insert (selection, image)
-                         end
-                      end
-                      dt.gui.selection (selection)
-                   end,
-                   "Select all red")

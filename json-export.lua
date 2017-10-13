@@ -47,6 +47,7 @@ dt.register_lib(
       clicked_callback = function ()
          local images = dt.gui.action_images
          local t ={}
+         dt.print ("Exporting JSON file")
          for _,v in ipairs(images) do
             --s=(tostring (v))
             s=(string.match (tostring (v), "%d%d%d%d%/%d%d/.+"))
